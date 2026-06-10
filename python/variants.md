@@ -34,7 +34,11 @@ batched AskUserQuestion if more than one axis is unclear.
 
 ### 1. Python version → `requires-python` + `target-version`
 - Signals: existing `.python-version`, CI matrix, dependency floors (e.g. discord.py 2.6 needs ≥3.10).
-- Defaults: **3.13** if unspecified. **3.14** if user mentions free-threaded / no-GIL or this is a fresh experimental project. **3.11** only if they explicitly need broader compat.
+- Defaults: **3.14** if unspecified. Fall back to **3.13** only when a required dep
+  isn't 3.14-compatible yet (verify with `uv sync`). **3.11** only if the user
+  explicitly needs broader compat.
+- When falling back, change `requires-python`, `target-version`, `.python-version`,
+  and any Dockerfile base image together so local/CI/prod stay aligned.
 - Map: `3.11 → py311`, `3.13 → py313`, `3.14 → py314`.
 
 ### 2. Line length
