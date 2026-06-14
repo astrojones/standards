@@ -18,7 +18,7 @@ picks up the change.
 ## Who consumes it
 
 - **`pyproject-canon` skill** — renders a project's `pyproject.toml` from `python/pyproject.canonical.toml`.
-- **`/new-app`** (astrojones-dev plugin) — scaffolds standard-compliant Python backends from it.
+- **`/new-app`** (deploy plugin) — scaffolds standard-compliant Python backends from it.
 - **CI** — an app's lint/test gate uses the same tooling config; CI can diff against this to catch drift.
 - **You, by hand** — `extend`/copy the relevant section when aligning an existing repo.
 
