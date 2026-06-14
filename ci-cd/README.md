@@ -8,7 +8,7 @@ single project or a personal skill.
 
 Most org apps deploy to the **nuklaut** controller (astrojones.de). The standard
 is the reusable workflow + four-file convention documented by the
-`astrojones-dev` plugin (`nuklaut-deploy` skill). Summary:
+`deploy` plugin (`nuklaut-deploy` skill). Summary:
 
 - App repo calls `astrojones/.github/.github/workflows/nuk-deploy.yml@main` from
   a 3-line `deploy.yml` with `secrets: inherit`.
@@ -16,7 +16,7 @@ is the reusable workflow + four-file convention documented by the
   → `nuk apply` → live at `https://<repo>.astrojones.de`.
 - Secrets via the `APP_ENV` repo secret; no SSH.
 
-Scaffold a compliant app with `/new-app` (astrojones-dev plugin).
+Scaffold a compliant app with `/new-app` (deploy plugin).
 
 ## The reusable workflow hub: `astrojones/.github`
 

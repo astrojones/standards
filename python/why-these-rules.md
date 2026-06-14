@@ -10,7 +10,7 @@ templates guarantees drift — active projects evolve, copies don't. So the
 canonical config lives **here**, once, and every consumer renders from it:
 
 - `pyproject-canon` skill — generates/upgrades a project's `pyproject.toml`.
-- `/new-app` (astrojones-dev) — scaffolds Python backends from it.
+- `/new-app` (deploy) — scaffolds Python backends from it.
 - CI — can diff a project's tooling sections against this to detect drift.
 
 Edit the standard here, nowhere else.

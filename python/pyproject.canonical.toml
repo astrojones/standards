@@ -4,7 +4,7 @@
 # This file is the org standard for Python tooling (ruff, ty, pytest, coverage,
 # build, dev deps). It is consumed by:
 #   - the `pyproject-canon` skill (renders new/upgraded pyproject.toml from this)
-#   - `/new-app` (astrojones-dev plugin) when scaffolding a Python backend
+#   - `/new-app` (deploy plugin) when scaffolding a Python backend
 #   - any project that wants to align: regenerate, don't hand-edit tooling drift
 #
 # Edit the standard HERE, nowhere else. `{{ … }}` are render-time placeholders;
