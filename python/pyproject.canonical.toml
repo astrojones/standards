@@ -21,7 +21,7 @@ name = "{{ project_name }}"
 version = "0.1.0"
 description = "{{ description }}"
 readme = "README.md"
-requires-python = ">={{ python_version }}"   # VARIANT: 3.11 / 3.13 / 3.14
+requires-python = ">={{ python_version }}"   # VARIANT: 3.11 / 3.12 / 3.13 / 3.14
 license = { text = "MIT" }
 authors = [
     { name = "Jona Heidsick", email = "jona.heidsick@gmail.com" },
@@ -77,7 +77,7 @@ packages = ["src/{{ package_name }}"]
 # ---------------------------------------------------------------------------
 [tool.ruff]
 line-length = 120                 # VARIANT: 100 for lean projects, 120 default
-target-version = "{{ ruff_target }}"   # py311 / py313 / py314
+target-version = "{{ ruff_target }}"   # py311 / py312 / py313 / py314
 src = ["src", "tests"]
 exclude = [".git", ".venv", "build", "dist", "__pycache__"]
 

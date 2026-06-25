@@ -39,7 +39,10 @@ batched AskUserQuestion if more than one axis is unclear.
   explicitly needs broader compat.
 - When falling back, change `requires-python`, `target-version`, `.python-version`,
   and any Dockerfile base image together so local/CI/prod stay aligned.
-- Map: `3.11 → py311`, `3.13 → py313`, `3.14 → py314`.
+- Map: `3.11 → py311`, `3.12 → py312`, `3.13 → py313`, `3.14 → py314`.
+- 3.12 is a valid target when a repo is already pinned to it, but it is **not** a
+  preferred fallback rung: when stepping down from 3.14, prefer 3.13. Reach for
+  3.12 only to match an existing 3.12 project, and 3.11 only for broad compat.
 
 ### 2. Line length
 - **120** is the user's standard (acg-cli, ACGuild, handoff, tg-agent-mcp, discord-bot, agent).
