@@ -20,19 +20,28 @@ Scaffold a compliant app with `/new-app` (deploy plugin).
 
 ## The reusable workflow hub: `astrojones/.github`
 
-All org-wide reusable workflows live there. Current set:
+All org-wide reusable workflows live there. The **canonical per-workflow
+reference** — call form, required inputs, secrets, and contracts — is the
+[reusable-workflow catalog](https://github.com/astrojones/.github#reusable-workflow-catalog)
+in that repo's README. The table below is a thin index, not a second copy; when
+the two disagree, the catalog wins.
 
 | Workflow | Purpose |
 |----------|---------|
+| `ci.yml` | Org-wide minimum CI gate: lint + format + test (trivial green for content-only repos) |
+| `app-ci.yml` | Build + push an image matrix to GHCR |
+| `release.yml` | No-PR conventional-commit release (version bump, tag, GitHub release) |
 | `nuk-deploy.yml` | Build → GHCR → `nuk apply` (the default deploy path) |
-| `nuk-apply.yml` | Apply a manifest without rebuilding |
-| `nuk-preview.yml` | Preview/ephemeral deploys |
-| `app-ci.yml` | Lint + test for app repos |
-| `e2e-compose-playwright.yml` | End-to-end tests against a compose stack |
-| `migration-shadow-check.yml` | Validate DB migrations against a shadow DB |
-| `runner-up.yml` / `runner-down.yml` / `runner-sweep.yml` | Self-hosted runner lifecycle |
+| `nuk-apply.yml` | Deploy-only: apply a manifest without rebuilding (multi-image stacks) |
+| `nuk-preview.yml` | Per-PR ephemeral preview stack |
+| `e2e-compose-playwright.yml` | Sharded Playwright E2E against a compose stack on an ephemeral runner |
+| `migration-shadow-check.yml` | Pre-deploy migration safety gate (shadow DB) |
+| `runner-up.yml` / `runner-down.yml` | Ephemeral Hetzner CI-runner lifecycle |
+| `runner-sweep.yml` | Internal hourly orphan-runner backstop (scheduled, not a reusable workflow) |
 
-Edit reusable CI **there**, not in app repos. App repos only call them.
+Edit reusable CI **there**, not in app repos. App repos only call them. For the
+authoritative inputs/secrets of any workflow above, follow the catalog link
+rather than duplicating them here.
 
 ## Advanced patterns (for apps that outgrow the simple path)
 
