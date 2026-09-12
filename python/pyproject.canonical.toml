@@ -99,7 +99,7 @@ select = [
     "B",      # flake8-bugbear
     "A",      # flake8-builtins shadowing
     "C4",     # flake8-comprehensions
-    "C901",   # mccabe complexity
+    "complex-structure",  # mccabe complexity (was C901)
     "SIM",    # flake8-simplify
     "RUF",    # ruff-specific rules
     "PL",     # pylint
@@ -108,7 +108,7 @@ select = [
     "FURB",   # refurb
     "RET",    # flake8-return
     "DTZ",    # flake8-datetimez — ban naive datetimes
-    "ANN401", # ban `Any` in annotations (Pydantic-everywhere policy)
+    "any-type", # ban `Any` in annotations (Pydantic-everywhere policy) (was ANN401)
     "FIX",    # flake8-fixme — flag TODO/FIXME so they don't rot
     "ERA",    # eradicate — no commented-out code
     "T10",    # flake8-debugger — no breakpoints
@@ -120,8 +120,8 @@ select = [
     "S",      # flake8-bandit — security
     "FLY",    # flynt — prefer f-strings
     "ARG",    # flake8-unused-arguments
-    "PGH003", # ban blanket `type: ignore`
-    "PGH004", # require specific noqa codes
+    "blanket-type-ignore", # ban blanket `type: ignore` (was PGH003)
+    "blanket-noqa", # require specific noqa codes (was PGH004)
     # VARIANT(api): add "FAST" — fastapi best practices
 ]
 ignore = [
@@ -164,7 +164,7 @@ max-nested-blocks = 5
     "SIM",     # simplify — readability of tests > brevity
     "TRY",     # tryceratops — tests inspect raises directly
     "RET",     # return style
-    "RUF029",  # async test funcs without await
+    "unused-async",  # async test funcs without await (was RUF029)
     "PT",      # pytest-style — when intentional
 ]
 
