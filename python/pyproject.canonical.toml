@@ -125,8 +125,8 @@ select = [
     # VARIANT(api): add "FAST" — fastapi best practices
 ]
 ignore = [
-    "PLC0415", # import-outside-top-level — needed for circular-import workarounds, lazy loading
-    "RUF100",  # unused-noqa — false positives across plugin versions
+    "import-outside-top-level", # import-outside-top-level — needed for circular-import workarounds, lazy loading
+    "unused-noqa",  # unused-noqa — false positives across plugin versions
 ]
 
 # Pydantic-everywhere policy (enforced by review, supported by lint):
@@ -149,17 +149,17 @@ max-nested-blocks = 5
 # Tests get to be pragmatic: asserts, magic numbers, non-public docstrings,
 # and security-style checks that make no sense for fixtures.
 "tests/**/*.py" = [
-    "S101",    # assert
-    "TID251",  # banned-api in tests
-    "PLR2004", # magic numbers in test data
-    "PLR6301", # method could be a function — fixtures don't need self
-    "D100",    # missing module docstring
-    "D102",    # missing class/method docstring
-    "D103",    # missing function docstring
-    "D104",    # missing package docstring
+    "assert",    # assert
+    "banned-api",  # banned-api in tests
+    "magic-value-comparison", # magic numbers in test data
+    "no-self-use", # method could be a function — fixtures don't need self
+    "undocumented-public-module",    # missing module docstring
+    "undocumented-public-method",    # missing class/method docstring
+    "undocumented-public-function",    # missing function docstring
+    "undocumented-public-package",    # missing package docstring
     "S",       # bandit broad
     "ARG",     # unused fixtures look like unused args
-    "ERA001",  # commented-out test cases
+    "commented-out-code",  # commented-out test cases
     "PLC",     # pylint convention — too noisy in tests
     "SIM",     # simplify — readability of tests > brevity
     "TRY",     # tryceratops — tests inspect raises directly
@@ -180,6 +180,14 @@ raises-extend-require-match-for = [
     "FileNotFoundError",
     "asyncio.CancelledError",
 ]
+
+# Python 3.14 (PEP 649): ruff treats every annotation as deferred and would move
+# Pydantic field types into `if TYPE_CHECKING:` blocks — which breaks Pydantic at
+# runtime. Pydantic-everywhere makes these bases runtime-evaluated org-wide.
+# Caveat: ruff only sees subclasses defined in the same module; keep a model's
+# subclasses next to their first-party base.
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = ["pydantic.BaseModel", "sqlmodel.SQLModel"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

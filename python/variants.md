@@ -26,6 +26,8 @@ re-justify why.
 - `[tool.pytest.ini_options]`: `minversion = "8.0"`, `asyncio_mode = "auto"`, `--strict-markers`, `--cov=src`, `--cov-report=term-missing`
 - `[tool.coverage.report]`: `precision = 2, show_missing = true, skip_covered = false`
 - `[tool.coverage.run] omit = ["*/tests/*", "*/migrations/*"]`
+- `[tool.ruff.lint.flake8-type-checking] runtime-evaluated-base-classes = ["pydantic.BaseModel", "sqlmodel.SQLModel"]` (required on py314, see comment in the canonical)
+- Rule **names**, not codes, in `ignore` / `per-file-ignores` (ruff ≥ 0.16 flags codes via `rule-codes-in-selectors`)
 
 ## Variation axes (ask if not inferable)
 
