@@ -1,0 +1,9 @@
+# astrojones canonical .npmrc — copy to the project root as `.npmrc`.
+# Consumed by: projects scaffolded by `/new-app` and any project aligning to the
+# org TypeScript standard (see variants.md, Node version axis).
+#
+# pnpm 12 reads ONLY auth/registry settings from `.npmrc`; every other setting —
+# including the engine guard — lives in `pnpm-workspace.yaml`. The line below is
+# kept for npm compatibility; the enforced pnpm guard is `engineStrict: true` in
+# `pnpm-workspace.canonical.yaml`.
+engine-strict=true
