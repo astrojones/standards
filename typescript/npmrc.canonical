@@ -1,0 +1,4 @@
+# astrojones canonical .npmrc — copy to the project root as `.npmrc`.
+# engine-strict makes a Node-version mismatch fail loudly instead of silently
+# installing against the wrong runtime (see variants.md, Node version axis).
+engine-strict=true

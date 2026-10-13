@@ -1,0 +1,3 @@
+# astrojones canonical pnpm-workspace.yaml — VARIANT: workspace only.
+# Placed at the workspace root beside a Python root; members live under web/*.
+packages: ["web/*"]

@@ -58,3 +58,14 @@ A Python app's CI must run the same gate as local: `uv sync`, `pytest`,
 `ruff check`, `ty check` — all green. The tooling config those commands read is
 the org [Python standard](../python/pyproject.canonical.toml). Keep CI and the
 local gate identical so green-on-CI means green-on-laptop.
+
+## TypeScript app CI
+
+A TypeScript app's CI must run the same gate as local:
+`pnpm install --frozen-lockfile && pnpm run lint && pnpm run build && pnpm run test`
+— all green. The typecheck lives inside `lint` (`biome ci . && tsc --noEmit`).
+The tooling config those commands read is the org
+[TypeScript standard](../typescript/). Set `node-version` explicitly in
+`ci.yml` (default `"24"`) rather than relying on the runner's preinstalled
+Node, and let `engine-strict` fail loudly on a mismatch. Keep CI and the local
+gate identical so green-on-CI means green-on-laptop.
