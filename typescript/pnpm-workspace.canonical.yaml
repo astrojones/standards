@@ -1,3 +1,16 @@
-# astrojones canonical pnpm-workspace.yaml — VARIANT: workspace only.
-# Placed at the workspace root beside a Python root; members live under web/*.
-packages: ["web/*"]
+# astrojones canonical pnpm settings — copy to the project root as
+# `pnpm-workspace.yaml`. Single Source of Truth for pnpm's non-auth settings.
+# Consumed by: projects scaffolded by `/new-app` and any project aligning to the
+# org TypeScript standard (see variants.md).
+#
+# pnpm 12 reads every non-auth setting from `pnpm-workspace.yaml`, not from
+# `.npmrc`. `engineStrict` turns a wrong Node version into a loud
+# ERR_PNPM_UNSUPPORTED_ENGINE instead of a silent install on an unsupported
+# runtime. pnpm also rewrites this file on install to append its
+# `minimumReleaseAgeExclude` supply-chain block — that is expected, not drift.
+
+engineStrict: true
+
+# VARIANT(workspace): uncomment when the repo is a pnpm workspace (front-end or
+# TypeScript members beside a Python root). Members live under `web/*`.
+# packages: ["web/*"]

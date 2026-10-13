@@ -54,15 +54,15 @@ batched AskUserQuestion if more than one axis is unclear.
 ### 3. Project shape → which template branch
 Pick one based on project intent. Ask only if intent is genuinely ambiguous.
 
-| Shape       | Signals                                       | Adds                                                           |
-|-------------|-----------------------------------------------|----------------------------------------------------------------|
-| `library`   | publishable, no entrypoint                    | base canonical only                                            |
-| `cli`       | `[project.scripts]`, typer/click in deps      | `typer>=0.15`, `rich>=13.0`, `[project.scripts]` entrypoint    |
-| `api`       | fastapi, uvicorn, route handlers              | `fastapi`, `uvicorn`, `httpx` in deps; **add `FAST` ruff rule** |
-| `mcp`       | fastmcp/mcp servers                           | `fastmcp>=3.0`, `mcp>=1.20`                                    |
-| `bot`       | discord.py, aiogram, telethon                 | bot framework dep; **`[tool.ty.rules]` loose variant** (cogs use dynamic attrs) |
-| `workspace` | uv workspace, root is a `src/` project, members under `packages/` | keep `[tool.hatch.*]`; add `[tool.uv.workspace]` + `[tool.uv.sources]` |
-| `workspace-virtual` | uv workspace, root is not itself a package (**fallback**) | replace `[tool.hatch.*]` with `[tool.uv.workspace]` + `[tool.uv.sources]` |
+| Shape               | Signals                                          | Adds                                                           |
+|---------------------|--------------------------------------------------|----------------------------------------------------------------|
+| `library`           | publishable, no entrypoint                       | base canonical only                                            |
+| `cli`               | `[project.scripts]`, typer/click in deps         | `typer>=0.15`, `rich>=13.0`, `[project.scripts]` entrypoint    |
+| `api`               | fastapi, uvicorn, route handlers                 | `fastapi`, `uvicorn`, `httpx` in deps; **add `FAST` ruff rule** |
+| `mcp`               | fastmcp/mcp servers                              | `fastmcp>=3.0`, `mcp>=1.20`                                    |
+| `bot`               | discord.py, aiogram, telethon                    | bot framework dep; **`[tool.ty.rules]` loose variant** (cogs use dynamic attrs) |
+| `workspace`         | uv workspace, root is a `src/` project           | keep `[tool.hatch.*]`; add `[tool.uv.workspace]` + `[tool.uv.sources]` |
+| `workspace-virtual` | uv workspace, root not a package (**fallback**)  | replace `[tool.hatch.*]` with `[tool.uv.workspace]` + `[tool.uv.sources]` |
 
 #### workspace: root project with members
 

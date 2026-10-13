@@ -21,10 +21,28 @@ omitting one, re-justify why.
   `typecheck` = `tsc --noEmit`, `test` = `vitest run`
 - `type: "module"` (ESM everywhere)
 - `engines.node` floor matching the chosen Node version
-- `.npmrc` with `engine-strict=true`
-- `packageManager` pinned via `corepack`; CI and local resolve the same pnpm
-- Dependency floors (`^x.y.z`), never exact pins, in `dependencies` / `devDependencies`
+- An engine guard that fails loudly on the wrong Node: `engineStrict: true` in
+  `pnpm-workspace.yaml` (see axis 3) **and** `engine-strict=true` in `.npmrc`.
+  pnpm 12 reads only auth/registry settings from `.npmrc`, so the guard that
+  matters is `pnpm-workspace.yaml`'s; the `.npmrc` line covers npm-compat
+  consumers.
+- `packageManager` pinned via `corepack`; CI and local resolve the same pnpm.
+  Pinning pnpm 12 needs **corepack ≥ 0.36** — Node ships an older bundled
+  corepack (0.33 as of Node 26) whose hardcoded `bin/pnpm.cjs` path no longer
+  exists in pnpm 12's native-binary layout, so `corepack pnpm` dies with
+  `MODULE_NOT_FOUND`. If the runner's corepack is older, upgrade it (`npm i -g
+  corepack@latest` before `corepack enable`) or launch pnpm with
+  `pnpm/action-setup`.
+- Dependency floors (`^x.y.z`), never exact pins, in `dependencies` /
+  `devDependencies`. Floors let the lockfile pin the resolved tree and keep the
+  manifest from drifting out of step. The `$schema` URL in
+  `biome.canonical.json` is pinned to the current Biome minor and may lag once a
+  floor resolves a newer one — harmless, it only feeds editor hints.
 - Vitest as the test runner; tests colocated as `*.test.ts` beside the source
+
+Render placeholders: `{{ project_name }}` (the package name) and
+`{{ node_version }}` (the Node floor in `engines.node`, e.g. `24`). Those are
+the only two; `packageManager` is a concrete pin, not a placeholder.
 
 ## Variation axes (ask if not inferable)
 
@@ -38,7 +56,8 @@ batched question if more than one axis is unclear.
   local toolchain pin, and the CI `node-version` together so local/CI/prod stay
   aligned.
 - `astrojones/.github` `ci.yml` must set `node-version: "24"` explicitly for
-  repos on the default — do not rely on the runner's preinstalled Node.
+  repos on the default — the reusable workflow defaults to `"20"`, so relying on
+  it installs against an unsupported runtime.
 
 ### 2. Project shape → which template branch
 Pick one based on project intent. Ask only if intent is genuinely ambiguous.
@@ -49,11 +68,28 @@ Pick one based on project intent. Ask only if intent is genuinely ambiguous.
 | `app`              | Vite, a rendered UI, a dev server         | `vite` in dev deps; `build` = `vite build`; `index.html` entry     |
 | `single-file-view` | MCP-apps view embedded as one HTML file    | Vite with a single-file build plugin; `build` emits one self-contained `.html` |
 
-### 3. `workspace` (pnpm workspace beside a Python root)
+The canonical `tsconfig.canonical.json` pins `lib: ["ES2022"]` and includes no
+DOM types. The browser shapes (`app`, `single-file-view`) need them — add
+`"DOM"` (and `"DOM.Iterable"` when you iterate DOM collections) to `lib`:
+`"lib": ["ES2022", "DOM", "DOM.Iterable"]`. `library` keeps the canonical `lib`
+as-is.
+
+The canonical `build` script is the `library` placeholder: `tsc --noEmit`, which
+always passes for a type-only package and emits nothing. The `app` and
+`single-file-view` shapes override it with a real bundler build (`vite build`).
+
+The canonical `private: true` is correct for apps and internal packages. A
+**publishable** `library` flips it to `false`; `engines` and the rest stay.
+
+### 3. `workspace` + the `pnpm-workspace.yaml` file
+Every TypeScript project ships `pnpm-workspace.canonical.yaml` as its
+`pnpm-workspace.yaml` — that is where pnpm 12 keeps non-auth settings, including
+`engineStrict`. Single projects ship it **settings-only** (no `packages`, so the
+workspace is just the root). A workspace additionally declares members.
+
 - Signals: a Python root (`pyproject.toml` at the repo root) that also ships
   front-end or TypeScript members, or a repo that will grow several TS packages.
-- Adds: `pnpm-workspace.canonical.yaml` at the root as `pnpm-workspace.yaml`
-  with `packages: ["web/*"]`; TS members live under `web/<name>`.
+- Adds: uncomment `packages: ["web/*"]`; TS members live under `web/<name>`.
 - The **root** `package.json` overrides the scripts (do not put these in the
   canonical single-project file):
   - `lint` = `biome ci . && pnpm -r typecheck`
@@ -62,6 +98,17 @@ Pick one based on project intent. Ask only if intent is genuinely ambiguous.
 - The `lint` override recurses into every member's `typecheck`, so a type error
   in any `web/*` package fails the root gate. `biome ci .` at the root lints all
   members from a single config.
+- pnpm rewrites `pnpm-workspace.yaml` on install: with a lockfile it auto-appends
+  a `minimumReleaseAgeExclude` block for packages younger than the supply-chain
+  age gate, e.g.
+  ```yaml
+  minimumReleaseAgeExclude:
+    - "@vitest/mocker@5.0.4"
+    - "@vitest/spy@5.0.4"
+    - vitest@5.0.4
+  ```
+  This is expected, not drift — commit it. Keep the canonical file settings-only;
+  let pnpm manage that list, never hand-maintain it.
 
 ## Anti-patterns (refuse silently)
 

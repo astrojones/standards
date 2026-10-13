@@ -65,7 +65,11 @@ A TypeScript app's CI must run the same gate as local:
 `pnpm install --frozen-lockfile && pnpm run lint && pnpm run build && pnpm run test`
 — all green. The typecheck lives inside `lint` (`biome ci . && tsc --noEmit`).
 The tooling config those commands read is the org
-[TypeScript standard](../typescript/). Set `node-version` explicitly in
-`ci.yml` (default `"24"`) rather than relying on the runner's preinstalled
-Node, and let `engine-strict` fail loudly on a mismatch. Keep CI and the local
+[TypeScript standard](../typescript/). The reusable `ci.yml` defaults
+`node-version` to `"20"`, so a repo on the Node 24 standard must set
+`node-version: "24"` explicitly — do not rely on the runner's preinstalled
+Node. That Node also bundles an old corepack: pinning pnpm 12 needs
+**corepack ≥ 0.36**, so upgrade corepack (`npm i -g corepack@latest` before
+`corepack enable`) or launch pnpm with `pnpm/action-setup`. Let the standard's
+`engineStrict` guard fail loudly on a version mismatch. Keep CI and the local
 gate identical so green-on-CI means green-on-laptop.

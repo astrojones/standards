@@ -10,9 +10,9 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
-    "typescript": "7.0.2",
-    "vitest": "5.0.4"
+    "@biomejs/biome": "^2.5.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.4"
   },
   "engines": {
     "node": ">={{ node_version }}"
