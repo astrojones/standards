@@ -51,13 +51,13 @@ batched question if more than one axis is unclear.
 
 ### 1. Node version → `engines.node` + CI `node-version`
 - Signals: existing `.nvmrc`, CI matrix, a dependency's `engines` floor.
-- Default: **24** (current LTS). Fall back to **22** only when a required dep or
-  deployment target has not moved to 24 yet, and change `engines.node`, the
-  local toolchain pin, and the CI `node-version` together so local/CI/prod stay
-  aligned.
-- `astrojones/.github` `ci.yml` must set `node-version: "24"` explicitly for
-  repos on the default — the reusable workflow defaults to `"20"`, so relying on
-  it installs against an unsupported runtime.
+- Default: **24** — the current LTS and the default of the org reusable
+  `ci.yml`. Fall back to **22** only when a required dep or deployment target has
+  not moved to 24 yet.
+- Keep `engines.node`, the `packageManager`/toolchain pin, `.node-version`, and
+  the CI `node-version` aligned on 24 so local/CI/prod stay in step.
+- Set `node-version` explicitly only when deliberately pinning a **different**
+  (non-default) version; do not rely on the runner's preinstalled Node.
 
 ### 2. Project shape → which template branch
 Pick one based on project intent. Ask only if intent is genuinely ambiguous.
