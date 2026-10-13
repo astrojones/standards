@@ -42,9 +42,12 @@ transpile config. It is the test runner the org standardizes on; the gate is
 pnpm is faster, stricter about phantom dependencies, and its lockfile is the
 only supported source of truth for the dependency tree. `--frozen-lockfile`
 makes CI fail when `package.json` and the lockfile disagree instead of quietly
-resolving a different tree. `engine-strict=true` extends the same fail-loud
-principle to the Node version: a consumer on the wrong Node stops at install
-rather than building against a runtime the project never supported.
+resolving a different tree. `engineStrict: true` in `pnpm-workspace.yaml`
+extends the same fail-loud principle to the Node version: a consumer on the
+wrong Node stops at install rather than building against a runtime the project
+never supported. pnpm 12 reads only auth/registry settings from `.npmrc`, so
+that guard has to live in `pnpm-workspace.yaml`; the `.npmrc` `engine-strict`
+line covers npm-compat consumers only.
 
 ## No `any`
 

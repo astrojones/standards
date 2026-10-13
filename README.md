@@ -16,7 +16,7 @@ picks up the change.
 | [`typescript/biome.canonical.json`](typescript/biome.canonical.json) | The canonical TypeScript formatter + linter — Biome with the org rules, import sorting via Assist. **The SSOT.** |
 | [`typescript/tsconfig.canonical.json`](typescript/tsconfig.canonical.json) | The canonical `tsconfig.json` — full strict family, ESNext/Bundler, no emit. **The SSOT.** |
 | [`typescript/package.canonical.json`](typescript/package.canonical.json) | The canonical `package.json` tooling — scripts, dev-dependency floors, engines, pnpm pin. **The SSOT.** |
-| [`typescript/npmrc.canonical`](typescript/npmrc.canonical) | Canonical `.npmrc` — `engine-strict=true` (npm-compat) so a wrong Node version fails loudly. |
+| [`typescript/npmrc.canonical`](typescript/npmrc.canonical) | Canonical `.npmrc` — `engine-strict=true` for npm compatibility only; the fail-loud engine guard is `engineStrict: true` in `pnpm-workspace.yaml`. |
 | [`typescript/pnpm-workspace.canonical.yaml`](typescript/pnpm-workspace.canonical.yaml) | Canonical `pnpm-workspace.yaml` — `engineStrict: true` (the pnpm 12 engine guard) plus the workspace variant. **The SSOT.** |
 | [`typescript/variants.md`](typescript/variants.md) | Which fields are non-negotiable vs. the few axes that legitimately vary (Node version, project shape, workspace…). |
 | [`typescript/why-these-rules.md`](typescript/why-these-rules.md) | Rationale: Biome-not-eslint+prettier, tsc-strict-as-ty, vitest, pnpm frozen lockfile, no `any`. |

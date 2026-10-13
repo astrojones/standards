@@ -133,7 +133,9 @@ canonical equivalent:
 
 When updating an existing TypeScript project, **preserve the project's `name`,
 `version`, and any project-specific fields**. Replace the tooling sections
-wholesale: `scripts`, `devDependencies`, `engines`, `packageManager`, and the
-`biome.json` / `tsconfig.json` configs. Don't merge — the canonical config is
+wholesale: `scripts`, `devDependencies`, `engines`, `packageManager`, the
+`biome.json` / `tsconfig.json` configs, and the `pnpm-workspace.yaml` /
+`.npmrc` files. `pnpm-workspace.yaml` carries the binding `engineStrict`
+guard; do not overlook it. Don't merge — the canonical config is
 internally consistent, and partial adoption breaks rule interactions (e.g. the
 `lint` script assumes `tsc --noEmit` reads the canonical `tsconfig.json`).
