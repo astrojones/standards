@@ -64,7 +64,15 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/{{ package_name }}"]
 
-# VARIANT(workspace): replace [tool.hatch.*] with:
+# VARIANT(workspace): the root stays a normal `src/` project with members under
+# `packages/`. Keep [tool.hatch.build.targets.wheel] above and add:
+# [tool.uv.workspace]
+# members = ["packages/<member>"]
+# [tool.uv.sources]
+# <member> = { workspace = true }
+#
+# VARIANT(workspace-virtual): the root is only a workspace, not a package.
+# Replace [tool.hatch.*] with:
 # [tool.uv.workspace]
 # members = ["packages/*"]
 # [tool.uv.sources]
