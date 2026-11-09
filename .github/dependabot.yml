@@ -1,0 +1,59 @@
+version: 2
+
+# The canonical files (python/pyproject.canonical.toml, typescript/package.canonical.json)
+# hold render-time placeholders, so Dependabot cannot read them. It bumps the real
+# manifests under floors/ instead; scripts/check_floors.py (CI) keeps the canonical
+# files in step. `versioning-strategy: increase` raises the floor itself, not just the lock.
+updates:
+  - package-ecosystem: "uv"
+    directory: "/floors/python"
+    schedule:
+      interval: "weekly"
+    versioning-strategy: "increase"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      uv:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: "npm"
+    directory: "/floors/typescript"
+    schedule:
+      interval: "weekly"
+    versioning-strategy: "increase"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      npm:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      github-actions:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"

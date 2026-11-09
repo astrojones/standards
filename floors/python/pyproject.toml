@@ -1,0 +1,48 @@
+# Version-floor manifest — the real, parseable file Dependabot bumps.
+# `python/pyproject.canonical.toml` carries placeholders and cannot be parsed, so
+# its floors are mirrored here. `scripts/check_floors.py` fails CI when the two
+# disagree; `--write` copies these floors into the canonical file.
+# Not a package: nothing builds or installs this.
+
+[project]
+name = "standards-floors"
+version = "0.0.0"
+description = "Python dependency floors for astrojones/standards"
+requires-python = ">=3.14"
+dependencies = [
+    "pydantic>=2.14",
+    "pydantic-settings>=2.16",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.162",
+    "uvicorn[standard]>=0.54",
+    "httpx2>=2.16",
+]
+mcp = [
+    "fastmcp>=4.1",
+    "mcp>=2.3",
+]
+cli = [
+    "typer>=0.29",
+    "rich>=15.0",
+]
+db = [
+    "sqlmodel>=0.0.48",
+    "sqlalchemy[asyncio]>=2.1",
+    "alembic>=1.20",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2",
+    "pytest-asyncio>=1.4",
+    "pytest-cov>=7.1",
+    "ruff>=0.17",
+    "ty>=0.0.100",
+    "pre-commit>=4.7",
+]
+
+[tool.uv]
+package = false
