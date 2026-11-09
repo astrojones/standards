@@ -21,7 +21,7 @@ name = "{{ project_name }}"
 version = "0.1.0"
 description = "{{ description }}"
 readme = "README.md"
-requires-python = ">={{ python_version }}"   # VARIANT: 3.11 / 3.12 / 3.13 / 3.14
+requires-python = ">={{ python_version }}"   # VARIANT: 3.13 / 3.14 (default 3.14)
 license = { text = "MIT" }
 authors = [
     { name = "Jona Heidsick", email = "jona.heidsick@gmail.com" },
@@ -33,11 +33,12 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "pydantic>=2.9",
-    "pydantic-settings>=2.6",
-    # VARIANT(api): "fastapi>=0.115", "uvicorn>=0.34", "httpx>=0.28"
-    # VARIANT(mcp): "fastmcp>=3.0", "mcp>=1.20"
-    # VARIANT(cli): "typer>=0.15", "rich>=13.0"
+    "pydantic>=2.14",
+    "pydantic-settings>=2.16",
+    # VARIANT(api): "fastapi>=0.162", "uvicorn[standard]>=0.54", "httpx2>=2.16"
+    # VARIANT(mcp): "fastmcp>=4.1", "mcp>=2.3"
+    # VARIANT(cli): "typer>=0.29", "rich>=15.0"
+    # VARIANT(db): "sqlmodel>=0.0.48", "sqlalchemy[asyncio]>=2.1", "alembic>=1.20"
 ]
 
 # Optional extras = runtime variants (consumers opt in).
@@ -45,20 +46,21 @@ dependencies = [
 # without leaking to downstream consumers.
 [project.optional-dependencies]
 api = [
-    "fastapi>=0.115",
-    "uvicorn[standard]>=0.34",
-    "httpx>=0.28",
+    "fastapi>=0.162",
+    "uvicorn[standard]>=0.54",
+    "httpx2>=2.16",
 ]
 
 [dependency-groups]
 dev = [
-    "pytest>=8.3",
-    "pytest-asyncio>=0.24",
-    "pytest-cov>=5.0",
-    "ruff>=0.9",
-    "ty>=0.0.29",
-    "pre-commit>=4.0",
-    # VARIANT(http-tests): "respx>=0.21",
+    "pytest>=9.2",
+    "pytest-asyncio>=1.4",
+    "pytest-cov>=7.1",
+    "ruff>=0.17",
+    "ty>=0.0.100",
+    "pre-commit>=4.7",
+    # VARIANT(http-tests): no extra dep — httpx2 ships `httpx2.MockTransport`.
+    # respx only patches `httpx`, so it does not work with httpx2.
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -85,7 +87,7 @@ packages = ["src/{{ package_name }}"]
 # ---------------------------------------------------------------------------
 [tool.ruff]
 line-length = 120                 # VARIANT: 100 for lean projects, 120 default
-target-version = "{{ ruff_target }}"   # py311 / py312 / py313 / py314
+target-version = "{{ ruff_target }}"   # py313 / py314
 src = ["src", "tests"]
 exclude = [".git", ".venv", "build", "dist", "__pycache__"]
 
@@ -205,7 +207,7 @@ convention = "google"
 # developed by Astral; pinned in dev group so version drift is explicit.
 # ---------------------------------------------------------------------------
 [tool.ty.rules]
-unresolved-import = "error"
+import-not-found = "error"   # was unresolved-import before ty 0.0.100
 unresolved-reference = "error"
 invalid-assignment = "error"
 # VARIANT(loose): when wrapping libraries with dynamic attrs (discord.py cogs,
@@ -217,9 +219,11 @@ invalid-assignment = "error"
 # missing-argument = "warn"
 
 [tool.pytest.ini_options]
-minversion = "8.0"
+minversion = "9.0"
 testpaths = ["tests"]
 asyncio_mode = "auto"
+# Unset, pytest-asyncio warns and `error::DeprecationWarning` below turns that into an INTERNALERROR.
+asyncio_default_fixture_loop_scope = "function"
 addopts = [
     "-v",
     "--strict-markers",

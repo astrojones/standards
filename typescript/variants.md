@@ -41,7 +41,7 @@ omitting one, re-justify why.
 - Vitest as the test runner; tests colocated as `*.test.ts` beside the source
 
 Render placeholders: `{{ project_name }}` (the package name) and
-`{{ node_version }}` (the Node floor in `engines.node`, e.g. `24`). Those are
+`{{ node_version }}` (the Node floor in `engines.node`: `24` or `26`). Those are
 the only two; `packageManager` is a concrete pin, not a placeholder.
 
 ## Variation axes (ask if not inferable)
@@ -51,11 +51,12 @@ batched question if more than one axis is unclear.
 
 ### 1. Node version → `engines.node` + CI `node-version`
 - Signals: existing `.nvmrc`, CI matrix, a dependency's `engines` floor.
-- Default: **24** — the current LTS and the default of the org reusable
-  `ci.yml`. Fall back to **22** only when a required dep or deployment target has
-  not moved to 24 yet.
+- Default: **24** — an LTS line and the default of the org reusable `ci.yml`.
+  **26** is also LTS and equally valid (pick it when the project wants the newer
+  runtime). **LTS is the rule**: only even-numbered lines in Active or Maintenance
+  LTS, never an odd "Current" release. Nothing below 24 — 22 is not a fallback.
 - Keep `engines.node`, the `packageManager`/toolchain pin, `.node-version`, and
-  the CI `node-version` aligned on 24 so local/CI/prod stay in step.
+  the CI `node-version` aligned on the chosen LTS so local/CI/prod stay in step.
 - Set `node-version` explicitly only when deliberately pinning a **different**
   (non-default) version; do not rely on the runner's preinstalled Node.
 

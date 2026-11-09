@@ -66,8 +66,9 @@ A TypeScript app's CI must run the same gate as local:
 — all green. The typecheck lives inside `lint` (`biome ci . && tsc --noEmit`).
 The tooling config those commands read is the org
 [TypeScript standard](../typescript/). The reusable `ci.yml` defaults
-`node-version` to `"24"` (current LTS); repos standardised on 24 need not
-override it, but should set it explicitly when pinning a different version.
+`node-version` to `"24"` (an LTS line; 26 is LTS too — never a non-LTS "Current"
+release); repos standardised on 24 need not override it, but should set it
+explicitly when pinning a different version.
 The default Node bundles an old corepack: pinning pnpm 12 needs
 **corepack ≥ 0.36**, so upgrade corepack (`npm i -g corepack@latest` before
 `corepack enable`) or launch pnpm with `pnpm/action-setup`. Let the standard's

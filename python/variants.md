@@ -12,18 +12,18 @@ re-justify why.
 
 - `hatchling` build backend with `src/`-layout
 - `[dependency-groups] dev` (PEP 735), not `[project.optional-dependencies] dev`
-- Dev group versions: `pytest>=8.3, pytest-asyncio>=0.24, pytest-cov>=5.0, ruff>=0.9, ty>=0.0.29, pre-commit>=4.0`
+- Dev group: `pytest`, `pytest-asyncio`, `pytest-cov`, `ruff`, `ty`, `pre-commit` at the floors in `pyproject.canonical.toml` (floors are kept current by Dependabot via `floors/python/`; never restate version numbers in prose)
 - Ruff `preview = true`
 - The full canonical rule list (see `pyproject.canonical.toml`)
-- Ruff `ignore = ["PLC0415", "RUF100"]`
+- Ruff `ignore = ["import-outside-top-level", "unused-noqa"]`
 - mccabe `max-complexity = 10`
 - pylint limits: `max-args=5, max-positional-args=5, max-statements=50, max-branches=12, max-returns=6, max-nested-blocks=5`
 - `ban-relative-imports = "all"`
 - `pydocstyle.convention = "google"`
 - `raises-extend-require-match-for` canonical list (ValidationError ×2, AttributeError, FileNotFoundError, asyncio.CancelledError)
 - `[tool.ruff.lint.per-file-ignores]` for `tests/**/*.py` — the canonical list
-- `[tool.ty.rules]`: `unresolved-import = "error"`, `unresolved-reference = "error"`, `invalid-assignment = "error"`
-- `[tool.pytest.ini_options]`: `minversion = "8.0"`, `asyncio_mode = "auto"`, `--strict-markers`, `--cov=src`, `--cov-report=term-missing`
+- `[tool.ty.rules]`: `import-not-found = "error"`, `unresolved-reference = "error"`, `invalid-assignment = "error"`
+- `[tool.pytest.ini_options]`: `minversion = "9.0"`, `asyncio_mode = "auto"`, `asyncio_default_fixture_loop_scope = "function"` (unset, pytest-asyncio warns and `error::DeprecationWarning` aborts the run), `--strict-markers`, `--cov=src`, `--cov-report=term-missing`
 - `[tool.coverage.report]`: `precision = 2, show_missing = true, skip_covered = false`
 - `[tool.coverage.run] omit = ["*/tests/*", "*/migrations/*"]`
 - `[tool.ruff.lint.flake8-type-checking] runtime-evaluated-base-classes = ["pydantic.BaseModel", "sqlmodel.SQLModel"]` (required on py314, see comment in the canonical)
@@ -37,14 +37,13 @@ batched AskUserQuestion if more than one axis is unclear.
 ### 1. Python version → `requires-python` + `target-version`
 - Signals: existing `.python-version`, CI matrix, dependency floors (e.g. discord.py 2.6 needs ≥3.10).
 - Defaults: **3.14** if unspecified. Fall back to **3.13** only when a required dep
-  isn't 3.14-compatible yet (verify with `uv sync`). **3.11** only if the user
-  explicitly needs broader compat.
+  isn't 3.14-compatible yet (verify with `uv sync`).
+- **3.15** is the next default but is not adopted yet — don't reach for it until the
+  org moves. **3.12 and older are not valid targets**, including as a CI default;
+  a repo still on them is migrated, not preserved.
 - When falling back, change `requires-python`, `target-version`, `.python-version`,
   and any Dockerfile base image together so local/CI/prod stay aligned.
-- Map: `3.11 → py311`, `3.12 → py312`, `3.13 → py313`, `3.14 → py314`.
-- 3.12 is a valid target when a repo is already pinned to it, but it is **not** a
-  preferred fallback rung: when stepping down from 3.14, prefer 3.13. Reach for
-  3.12 only to match an existing 3.12 project, and 3.11 only for broad compat.
+- Map: `3.13 → py313`, `3.14 → py314`.
 
 ### 2. Line length
 - **120** is the user's standard (acg-cli, ACGuild, handoff, tg-agent-mcp, discord-bot, agent).
@@ -57,9 +56,10 @@ Pick one based on project intent. Ask only if intent is genuinely ambiguous.
 | Shape               | Signals                                          | Adds                                                           |
 |---------------------|--------------------------------------------------|----------------------------------------------------------------|
 | `library`           | publishable, no entrypoint                       | base canonical only                                            |
-| `cli`               | `[project.scripts]`, typer/click in deps         | `typer>=0.15`, `rich>=13.0`, `[project.scripts]` entrypoint    |
-| `api`               | fastapi, uvicorn, route handlers                 | `fastapi`, `uvicorn`, `httpx` in deps; **add `FAST` ruff rule** |
-| `mcp`               | fastmcp/mcp servers                              | `fastmcp>=3.0`, `mcp>=1.20`                                    |
+| `cli`               | `[project.scripts]`, typer/click in deps         | `typer`, `rich`, `[project.scripts]` entrypoint                |
+| `api`               | fastapi, uvicorn, route handlers                 | `fastapi`, `uvicorn[standard]`, `httpx2` in deps; **add `FAST` ruff rule** |
+| `mcp`               | fastmcp/mcp servers                              | `fastmcp`, `mcp`                                               |
+| `db`                | sqlmodel/sqlalchemy, migrations                  | `sqlmodel`, `sqlalchemy[asyncio]`, `alembic` (combine with `api`) |
 | `bot`               | discord.py, aiogram, telethon                    | bot framework dep; **`[tool.ty.rules]` loose variant** (cogs use dynamic attrs) |
 | `workspace`         | uv workspace, root is a `src/` project           | keep `[tool.hatch.*]`; add `[tool.uv.workspace]` + `[tool.uv.sources]` |
 | `workspace-virtual` | uv workspace, root not a package (**fallback**)  | replace `[tool.hatch.*]` with `[tool.uv.workspace]` + `[tool.uv.sources]` |
@@ -119,9 +119,11 @@ If the existing pyproject.toml or user request includes any of these, replace
 with the canonical equivalent:
 
 - **mypy** → use `ty` instead. The user moved off mypy.
+- **`httpx`** → use `httpx2` (pydantic's maintained successor; fastapi's `standard` extra and `mcp` 2.x
+  already depend on it). Mock with `httpx2.MockTransport`; **`respx` only patches `httpx`** and does not work.
 - **black** → not needed; `ruff format` covers it.
 - **`select` without `preview = true`** → enable preview; the rule set depends on it.
-- **Pinned exact versions in `dependencies`** (e.g. `pydantic==2.9.2`) → use floors (`>=2.9`).
+- **Pinned exact versions in `dependencies`** (e.g. `pydantic==2.14.3`) → use floors (`>=2.14`).
   Exception: `[dependency-groups] dev` versions are floors (`>=`), not pins.
 - **`[project.optional-dependencies] dev = […]`** → move to `[dependency-groups] dev`.
 - **Relative imports in source** → `ban-relative-imports = "all"` enforces this.

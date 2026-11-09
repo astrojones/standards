@@ -35,7 +35,7 @@ boundaries are where type safety silently dies.
 ## ty, not mypy
 
 `ty` (Astral) is fast and strict. The org migrated off mypy. Three rules at
-`error` by default (`unresolved-import`, `unresolved-reference`,
+`error` by default (`import-not-found`, `unresolved-reference`,
 `invalid-assignment`); a documented loose variant exists for bot/cog projects
 with dynamic attribute access.
 

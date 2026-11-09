@@ -21,6 +21,8 @@ picks up the change.
 | [`typescript/variants.md`](typescript/variants.md) | Which fields are non-negotiable vs. the few axes that legitimately vary (Node version, project shape, workspace…). |
 | [`typescript/why-these-rules.md`](typescript/why-these-rules.md) | Rationale: Biome-not-eslint+prettier, tsc-strict-as-ty, vitest, pnpm frozen lockfile, no `any`. |
 | [`ci-cd/README.md`](ci-cd/README.md) | Org CI/CD conventions and the reusable-workflow index. |
+| [`floors/`](floors/) | Real, parseable manifests (`pyproject.toml` + `uv.lock`, `package.json` + `pnpm-lock.yaml`) holding every dependency floor. **Dependabot bumps these**; the canonical files mirror them. |
+| [`scripts/check_floors.py`](scripts/check_floors.py) | Fails when a canonical file disagrees with `floors/`; `--write` syncs the canonical files from `floors/`. |
 
 ## Who consumes it
 
@@ -52,9 +54,25 @@ The typecheck lives inside `lint` (`biome ci . && tsc --noEmit`); there is no
 separate typecheck step in the gate. Green here means green everywhere. Don't
 weaken the rules per-project — pick a documented variant or regenerate.
 
+## Keeping versions current
+
+The canonical files carry `{{ … }}` placeholders, so Dependabot cannot parse
+them. Every dependency floor therefore also lives in `floors/`, a pair of real
+manifests that Dependabot (`.github/dependabot.yml`) bumps weekly with
+`versioning-strategy: increase`. CI (`.github/workflows/floors.yml`) then fails
+until the canonical files carry the same floors:
+
+```bash
+uv run python scripts/check_floors.py --write
+```
+
+Run that on a Dependabot PR branch, commit the result, merge. To add or drop a
+dependency, edit **both** `floors/…` and the canonical file (the check reports
+an entry present in only one), then `uv lock` / `pnpm install` inside `floors/…`.
+
 ## How to change a standard
 
-1. Edit the file here.
+1. Edit the file here (floors: edit `floors/` too, see above).
 2. Bump the tag (`git tag vX.Y.Z`) so consumers can pin if they need to.
 3. Regenerate downstream projects from the canonical files (the generator skills
    read this repo).
