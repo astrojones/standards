@@ -59,6 +59,17 @@ A Python app's CI must run the same gate as local: `uv sync`, `pytest`,
 the org [Python standard](../python/pyproject.canonical.toml). Keep CI and the
 local gate identical so green-on-CI means green-on-laptop.
 
+## Rust app CI
+
+A Rust app's CI runs `make check` — the same target as local — and nothing else for the gate.
+No reusable workflow covers Rust yet (`bartixcloud/workflows` ci.yml is Python only), so the
+repo carries its own `ci.yml`. What it needs from the runner: `rustup` (the pinned toolchain in
+`rust-toolchain.toml` installs on first use), a C compiler, `git`, and any tool the tests call.
+`actions/checkout` wipes ignored files, so point `CARGO_TARGET_DIR` at a directory outside the
+workspace on a persistent runner, or every run builds cold. Releases are tag-only: the shared
+release workflow cannot stamp `Cargo.lock`, so the git tag is the version and `make dist` reads
+it. See [`rust/`](../rust/).
+
 ## TypeScript app CI
 
 A TypeScript app's CI must run the same gate as local:

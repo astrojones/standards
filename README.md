@@ -20,6 +20,11 @@ picks up the change.
 | [`typescript/pnpm-workspace.canonical.yaml`](typescript/pnpm-workspace.canonical.yaml) | Canonical `pnpm-workspace.yaml` — `engineStrict: true` (the pnpm 12 engine guard) plus the workspace variant. **The SSOT.** |
 | [`typescript/variants.md`](typescript/variants.md) | Which fields are non-negotiable vs. the few axes that legitimately vary (Node version, project shape, workspace…). |
 | [`typescript/why-these-rules.md`](typescript/why-these-rules.md) | Rationale: Biome-not-eslint+prettier, tsc-strict-as-ty, vitest, pnpm frozen lockfile, no `any`. |
+| [`rust/Makefile.canonical`](rust/Makefile.canonical) | The canonical Rust `Makefile`: `check` (the gate), `build`, `install`, `dist` (release archive + sha256), `brew-style`. Needs no edits. **The SSOT.** |
+| [`rust/rust-toolchain.canonical.toml`](rust/rust-toolchain.canonical.toml) | Exact toolchain pin with `rustfmt` and `clippy`. **The SSOT.** |
+| [`rust/Cargo.canonical.toml`](rust/Cargo.canonical.toml) | The `[package]` header: edition 2024, license, repository, `publish = false`. **The SSOT.** |
+| [`rust/variants.md`](rust/variants.md) | Which Rust rules are non-negotiable vs. the axes that vary (shape, publishing, distribution, toolchain). |
+| [`rust/why-these-rules.md`](rust/why-these-rules.md) | Rationale: one gate spelled once, `--locked`, exact toolchain, release naming, repo-as-tap. |
 | [`ci-cd/README.md`](ci-cd/README.md) | Org CI/CD conventions and the reusable-workflow index. |
 | [`floors/`](floors/) | Real, parseable manifests (`pyproject.toml` + `uv.lock`, `package.json` + `pnpm-lock.yaml`) holding every dependency floor. **Dependabot bumps these**; the canonical files mirror them. |
 | [`scripts/check_floors.py`](scripts/check_floors.py) | Fails when a canonical file disagrees with `floors/`; `--write` syncs the canonical files from `floors/`. |
@@ -53,6 +58,18 @@ pnpm install --frozen-lockfile && pnpm run lint && pnpm run build && pnpm run te
 The typecheck lives inside `lint` (`biome ci . && tsc --noEmit`); there is no
 separate typecheck step in the gate. Green here means green everywhere. Don't
 weaken the rules per-project — pick a documented variant or regenerate.
+
+## The Rust gate (non-negotiable)
+
+Any project with a Rust crate must pass, locally and in CI:
+
+```bash
+make check   # cargo fmt --check && cargo clippy --all-targets --locked -- -D warnings && cargo test --locked
+```
+
+Green here means green everywhere. Don't weaken the gate per-project — pick a
+documented variant. The Rust files are not tracked by `floors/` yet: the toolchain is an exact
+pin that is bumped by hand.
 
 ## Keeping versions current
 

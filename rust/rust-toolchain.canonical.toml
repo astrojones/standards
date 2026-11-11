@@ -1,0 +1,6 @@
+# Pin the exact toolchain: local, CI and the release binary all build with the same rustc.
+# Replace the placeholder with the current stable release (`rustup check`). Bump it on purpose,
+# in its own commit, together with whatever the new clippy now flags.
+[toolchain]
+channel = "{{ rust_version }}"
+components = ["rustfmt", "clippy"]

@@ -1,0 +1,54 @@
+# The canonical Makefile of a Rust project (astrojones/standards, rust/Makefile.canonical).
+# Copy it as `Makefile`; it needs no edits: the binary name and version come from Cargo.toml.
+# `make check` is the gate CI runs too: green here means green on CI.
+
+BIN     := $(shell sed -n 's/^name = "\(.*\)"/\1/p' Cargo.toml | head -n 1)
+# The release tag is the version (Cargo.toml is not stamped); fall back to Cargo.toml.
+VERSION ?= $(shell git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')
+ifeq ($(VERSION),)
+VERSION := $(shell sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n 1)
+endif
+TARGET  := $(shell rustc -vV | sed -n 's/^host: //p')
+TARGET_DIR := $(or $(CARGO_TARGET_DIR),target)
+DIST    := dist
+NAME    := $(BIN)-v$(VERSION)-$(TARGET)
+
+.DEFAULT_GOAL := help
+.PHONY: help build install fmt fmt-check lint test check dist brew-style clean
+
+help: ## list the targets
+	@awk 'BEGIN {FS = ":.*## "} /^[a-z-]+:.*## / {printf "  make %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+build: ## optimized binary in target/release
+	cargo build --release --locked
+
+install: ## install the binary into ~/.cargo/bin
+	cargo install --path . --locked
+
+fmt: ## format the code
+	cargo fmt
+
+fmt-check: ## fail when the code is not formatted
+	cargo fmt --check
+
+lint: ## clippy on every target, warnings are errors
+	cargo clippy --all-targets --locked -- -D warnings
+
+test: ## all tests (the verify tests need `ty` on PATH)
+	cargo test --locked
+
+check: fmt-check lint test ## the gate: format, lint, test
+
+dist: build ## release tarball + sha256 for this host in dist/
+	mkdir -p $(DIST)/$(NAME)
+	cp $(TARGET_DIR)/release/$(BIN) LICENSE README.md $(DIST)/$(NAME)/
+	tar -C $(DIST) -czf $(DIST)/$(NAME).tar.gz $(NAME)
+	cd $(DIST) && shasum -a 256 $(NAME).tar.gz > $(NAME).tar.gz.sha256
+	@cat $(DIST)/$(NAME).tar.gz.sha256
+
+brew-style: ## lint the Homebrew formula (needs Homebrew)
+	brew style Formula/$(BIN).rb
+
+clean: ## remove build output and dist/
+	cargo clean
+	rm -r $(DIST) 2>/dev/null || true
