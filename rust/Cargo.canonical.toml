@@ -1,0 +1,13 @@
+# The `[package]` header of a Rust binary or library of the org. Only the fields that are not
+# the project's own are fixed here; dependencies and features are not part of the standard.
+[package]
+name = "{{ name }}"
+version = "0.1.0"
+edition = "2024"
+description = "{{ one sentence }}"
+license = "MIT"
+repository = "https://github.com/{{ owner }}/{{ name }}"
+readme = "README.md"
+# Keep this line while any dependency is a git dependency (crates.io rejects those) or the
+# crate is not meant for crates.io. Remove it only to publish on purpose.
+publish = false
